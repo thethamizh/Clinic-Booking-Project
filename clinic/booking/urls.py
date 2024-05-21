@@ -9,4 +9,5 @@ urlpatterns = [
     path('user-update/<int:id>', views.userUpdate, name='userUpdate'),
     path('user-update-submit/<int:id>', views.userUpdateSubmit, name='userUpdateSubmit'),
     path('staff-panel', views.staffPanel, name='staffPanel'),
+    path('cancel_action_url', views.cancel_appointment, name='cancel_appointment'),
 ]

@@ -1,15 +1,30 @@
-<title>Staff Panel</title>
+<head>
+<title>My Bookings</title>
 {% extends 'layout.html' %}
 {% load static %}
 {% block body %}
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<style>
+  .cancel-b{
+    border: none;
+    font-weight: bold;
+    background-color: #ff0013;
+    color: white;
+    border-radius: 35%;
+  }
+  .booking-box{
+    display: flex;
+    justify-content: center;
+  }
+</style>
 
 
 
 {% if user.is_authenticated %}
 
 <div class="shadow p-4 mb-5 bg-body bg-body rounded text-black  m-5 ">
-    <h1 class="text-center mt-5 mb-5">Staff Panel</h1>
+    <h1 class="text-center mt-5 mb-5">My Bookings</h1>
     <input class="form-control form-control-lg fs-3 border border-primary" id="myInput" type="text" placeholder="Search Appointment">
     <br>
     
@@ -22,6 +37,8 @@
               <th class="text-center" scope="col">Last Name</th>
               <th class="text-center" scope="col">Service</th>
               <th class="text-center" scope="col">Date</th>
+              <th class="text-center">Status</th>
+
             </tr>
           </thead>
           <tbody id="myTable">
@@ -32,6 +49,14 @@
               <td class="text-center">{{item.user.last_name}}</td>
               <td class="text-center">{{item.service}}</td>
               <td class="text-center">{{item.day}}</td>
+              <td class="text-center booking-box">Booked
+              <form method="post" action="{% url 'cancel_action_url' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="appointment_id" value="{{ item.id }}">
+                  <button type="submit" class="cancel-b"> X</button>
+              </form>
+              </td>
+
             </tr>
               {% endfor %}
           </tbody>

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from datetime import datetime, timedelta
 from .models import *
 from django.contrib import messages
+from django.core.mail import send_mail
 
 def index(request):
     return render(request, "index.html",{})
@@ -34,6 +35,7 @@ def booking(request):
         })
 
 def bookingSubmit(request):
+    print('request.POST')
     user = request.user
     times = [
         "3 PM", "3:30 PM", "4 PM", "4:30 PM", "5 PM", "5:30 PM", "6 PM", "6:30 PM", "7 PM", "7:30 PM"
@@ -59,14 +61,16 @@ def bookingSubmit(request):
                 if date == 'Monday' or date == 'Saturday' or date == 'Wednesday':
                     if Appointment.objects.filter(day=day).count() < 11:
                         if Appointment.objects.filter(day=day, time=time).count() < 1:
-                            AppointmentForm = Appointment.objects.get_or_create(
+                            AppointmentForm , created = Appointment.objects.get_or_create(
                                 user = user,
                                 service = service,
                                 day = day,
                                 time = time,
                             )
+                            # send_mail_service(AppointmentForm)
                             messages.success(request, "Appointment Saved!")
                             return redirect('index')
+
                         else:
                             messages.success(request, "The Selected Time Has Been Reserved Before!")
                     else:
@@ -82,6 +86,31 @@ def bookingSubmit(request):
     return render(request, 'bookingSubmit.html', {
         'times':hour,
     })
+
+def cancel_appointment(request):
+    if request.method ==  'POST':
+        appointment_id = request.POST.get('appointment_id')
+        delete_booking = Appointment.objects.filter(id=appointment_id).delete() #django orm
+    return redirect('staffPanel')
+
+
+def send_mail_service(appointment):
+    # Define email subject
+    subject = 'Appointment Confirmation'
+
+    # Define email content using a template
+    message = "Your appointment is confirmed with us"
+
+    # Sender's email address
+    sender_email = 'thamizhdasane@gmail.com'  # Replace with your sender email address
+
+    # Recipient's email address
+    recipient_email = appointment.user.email
+
+    # Send email
+    send_mail(subject, message, sender_email, [recipient_email])
+
+
 
 def userPanel(request):
     user = request.user
